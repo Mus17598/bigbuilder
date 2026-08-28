@@ -87,6 +87,9 @@
      strands the last word on a line of its own. */
   --fs-hero: clamp(2.75rem, 6.4vw, 8.5rem);
   --fs-section: clamp(2.5rem, 6vw, 6.5rem);
+  /* Split beats pair a heading with a live panel in the same column, so they
+     need a step below --fs-section to keep the pinned section inside 100svh. */
+  --fs-section-sm: clamp(1.9rem, 4vw, 4rem);
   --fs-module: clamp(2rem, 3.6vw, 3.75rem);
   --fs-lede: clamp(1.05rem, 1.4vw, 1.35rem);
   --fs-body: 1.05rem;

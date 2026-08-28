@@ -19,26 +19,24 @@ export default function ServiceRack() {
   const [activeIndex, setActiveIndex] = useState(0);
   /** True only while the rack is the section on screen. */
   const [rackActive, setRackActive] = useState(false);
+  /** Mirrors activeIndex so onToggle can read it without re-subscribing. */
+  const activeIndexRef = useRef(0);
   const [openService, setOpenService] = useState<Service | null>(null);
 
   const activePillar = SERVICES[activeIndex]?.pillar ?? PILLARS[0].id;
 
   const closeDetail = useCallback(() => setOpenService(null), []);
 
+  // Writing a ref during render is not allowed; mirror it in an effect.
+  useEffect(() => {
+    activeIndexRef.current = activeIndex;
+  }, [activeIndex]);
+
   useEffect(() => {
     const section = sectionRef.current;
     const viewport = viewportRef.current;
     const track = trackRef.current;
     if (!section || !viewport || !track) return;
-
-    // Owns the accent only while on screen. Deliberately outside matchMedia:
-    // this is a colour handover, not motion, so it applies in every mode.
-    const ownership = ScrollTrigger.create({
-      trigger: section,
-      start: 'top 65%',
-      end: 'bottom 35%',
-      onToggle: (self) => setRackActive(self.isActive),
-    });
 
     const mm = gsap.matchMedia();
 
@@ -65,6 +63,20 @@ export default function ServiceRack() {
           start: 'top top',
           end: () => `+=${distance()}`,
           invalidateOnRefresh: true,
+          /**
+           * Accent ownership rides on the pin trigger rather than a separate
+           * one aimed at this section. A second trigger cannot measure a
+           * pinned element (it becomes position:fixed, so its rect stops
+           * tracking scroll), and its stale deactivation fired AFTER the next
+           * beat had already claimed the accent, stealing the colour back.
+           */
+      onToggle: (self) => {
+            setRackActive(self.isActive);
+            // Synchronous, so ScrollTrigger's start-position ordering decides who
+            // wins the handover rather than React's commit schedule.
+            const service = SERVICES[activeIndexRef.current];
+            setAccent(self.isActive && service ? `var(${service.accent})` : 'var(--brand)');
+          },
         },
       });
 
@@ -183,6 +195,23 @@ export default function ServiceRack() {
        CSS. Without that the track would keep its max-content width and all
        but the first two cards would sit clipped outside the column.
        --------------------------------------------------------------- */
+    /* Nothing is pinned in these modes, so a plain trigger measures fine. */
+    mm.add('(max-width: 1023px), (prefers-reduced-motion: reduce)', () => {
+      const owner = ScrollTrigger.create({
+        trigger: section,
+        start: 'top 65%',
+        end: 'bottom 35%',
+      onToggle: (self) => {
+        setRackActive(self.isActive);
+        // Synchronous, so ScrollTrigger's start-position ordering decides who
+        // wins the handover rather than React's commit schedule.
+        const service = SERVICES[activeIndexRef.current];
+        setAccent(self.isActive && service ? `var(${service.accent})` : 'var(--brand)');
+      },
+      });
+      return () => owner.kill();
+    });
+
     mm.add('(max-width: 1023px) and (prefers-reduced-motion: no-preference)', () => {
       const cards = cardRefs.current.filter(Boolean) as HTMLButtonElement[];
       gsap.set(cards, { clearProps: 'all' });
@@ -197,25 +226,23 @@ export default function ServiceRack() {
       });
     });
 
-    return () => {
-      ownership.kill();
-      mm.revert();
-    };
+    return () => mm.revert();
   }, []);
 
   /**
    * Accent handover: one write to :root recolours the progress bar, the
    * pillar indicator and the background bleed together.
    *
-   * Gated on rackActive. Without that gate this effect ran on mount and
-   * painted the hero's headline and progress bar in the first module's cyan
-   * before the visitor had scrolled anywhere near the rack. The accent slot
-   * belongs to whichever section is actually on screen; off the rack it
-   * reverts to the brand.
+   * Only ever writes while the rack is on screen. Handing OFF the accent is
+   * done synchronously in onToggle instead, because an effect runs after the
+   * render commit: the deferred reset was landing after the next beat had
+   * already claimed the slot and stole its colour back. Two systems writing
+   * one shared variable have to write on the same schedule.
    */
   useEffect(() => {
+    if (!rackActive) return;
     const service = SERVICES[activeIndex];
-    setAccent(rackActive && service ? `var(${service.accent})` : 'var(--brand)');
+    if (service) setAccent(`var(${service.accent})`);
   }, [activeIndex, rackActive]);
 
   /**

@@ -541,6 +541,221 @@
 }
 
 /* =========================================================================
+   DEEP DIVE BEATS
+   ========================================================================= */
+.beat {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  /* Column, not row. A beat can have a second child after .beat__inner (the
+     CRM stat row), and as a flex row that child landed BESIDE the content
+     instead of under it. */
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--ink-900);
+  border-block: var(--card-border);
+}
+
+.beat__inner {
+  position: relative;
+  z-index: var(--z-content);
+  width: 100%;
+  display: grid;
+  gap: var(--space-xl);
+  align-items: center;
+  padding-block: var(--space-2xl);
+}
+
+/* A pinned section MUST fit the viewport: anything taller has its own content
+   scrolled out of reach while the pin holds it in place. Stacking a full-width
+   16:9 stage under the text put the CRM beat at 1421px against an 800px
+   viewport, so the full beats run as two columns at desktop and only stack
+   once there is vertical room for it. */
+.beat--full .beat__inner {
+  grid-template-columns: 0.85fr 1.15fr;
+}
+.beat--split .beat__inner {
+  grid-template-columns: 1fr 1fr;
+}
+/* See the rack: grid items refuse to shrink below min-content without this. */
+.beat__text,
+.beat__stage {
+  min-width: 0;
+}
+
+.beat--split .beat__stage {
+  order: -1;
+}
+
+.beat__eyebrow {
+  color: var(--card-accent);
+}
+
+.beat__heading {
+  font-size: var(--fs-section);
+  text-transform: uppercase;
+  margin-top: var(--space-md);
+  max-width: 18ch;
+}
+.beat__heading .accent-word {
+  color: var(--card-accent);
+}
+
+.beat__body {
+  margin-top: var(--space-lg);
+  font-size: var(--fs-lede);
+}
+
+.beat--full .beat__text {
+  max-width: 46rem;
+}
+
+.beat__stage {
+  position: relative;
+}
+
+/* Belt and braces: even two columns can overflow a short laptop viewport, so
+   cap the stage and let object-fit crop rather than push the beat taller. */
+.beat__stage .media-frame {
+  max-height: 62svh;
+}
+
+/* Anchored callouts over the media. Hidden until the scrub passes their
+   progress mark, then they land rather than drift. */
+.beat__label {
+  position: absolute;
+  transform: translate(-50%, -50%) scale(0.9);
+  padding: var(--space-2xs) var(--space-sm);
+  border: 1px solid var(--card-accent);
+  border-radius: var(--radius-sm);
+  background: var(--scrim-strong);
+  color: var(--card-accent);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.35s var(--ease-expo), transform 0.35s var(--ease-expo);
+}
+.beat__label.is-on {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* ---- CRM stat counters ---- */
+.stats {
+  position: relative;
+  z-index: var(--z-content);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: var(--card-border);
+}
+.stats__num {
+  display: block;
+  font-family: var(--ff-display);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 4.5vw, 4rem);
+  letter-spacing: var(--tracking-display);
+  color: var(--card-accent);
+  /* Tabular figures stop the number jittering sideways while it ticks. */
+  font-variant-numeric: tabular-nums;
+}
+.stats__label {
+  margin-top: var(--space-xs);
+}
+
+/* ---- Chat transcript ---- */
+.beat--split .beat__heading {
+  font-size: var(--fs-section-sm);
+}
+
+.chat {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: var(--card-border);
+}
+.chat__list {
+  list-style: none;
+  display: grid;
+  gap: var(--space-xs);
+  /* Reserve the room the finished conversation needs so bubbles appearing
+     never push the heading around mid-scrub. */
+  min-height: 17rem;
+  align-content: start;
+}
+.chat__bubble {
+  max-width: 32ch;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  border: var(--card-border);
+  background: var(--surface-1);
+  font-size: 0.92rem;
+  color: var(--text-hi);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s var(--ease-power), transform 0.3s var(--ease-power);
+  min-height: 2.75rem;
+}
+.chat__bubble.is-in {
+  opacity: 1;
+  transform: none;
+}
+.chat__bubble--bot {
+  margin-left: auto;
+  border-color: var(--card-accent);
+  background: var(--surface-2);
+}
+
+@media (max-width: 1023px) {
+  .beat {
+    min-height: 0;
+    padding-block: var(--space-2xl);
+  }
+  .beat--full .beat__inner,
+  .beat--split .beat__inner {
+    grid-template-columns: 1fr;
+  }
+  .beat--split .beat__stage {
+    order: 0;
+  }
+  .stats {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+  .beat__label {
+    font-size: 0.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beat {
+    min-height: 0;
+    padding-block: var(--space-2xl);
+  }
+  .chat__bubble {
+    opacity: 1;
+    transform: none;
+  }
+  /* Nothing drives the typing, so show the static transcript instead. */
+  .chat__list {
+    display: none;
+  }
+  .chat .sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    clip-path: none;
+    display: grid;
+    gap: var(--space-sm);
+    color: var(--text-mid);
+    white-space: normal;
+  }
+}
+
+/* =========================================================================
    SERVICE RACK
    ========================================================================= */
 .rack {
