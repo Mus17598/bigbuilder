@@ -176,7 +176,10 @@
 }
 .split-char__inner {
   display: inline-block;
-  will-change: transform;
+  /* No will-change here on purpose. Every glyph of every heading on the page
+     is a .split-char__inner, and a permanent will-change would promote
+     hundreds of elements to their own compositor layers for an animation that
+     lasts under a second. GSAP sets it per-tween and clears it after. */
 }
 
 .sr-only {
@@ -538,6 +541,89 @@
 @media (max-width: 640px) {
   .hero__indicator { display: none; }
   .hero__actions .btn { flex: 1 1 100%; }
+}
+
+/* =========================================================================
+   TRUST STRIP
+   ========================================================================= */
+.trust {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-md) var(--gutter);
+  border-block: var(--card-border);
+  background: var(--ink-900);
+  overflow: hidden;
+}
+.trust__label {
+  flex: 0 0 auto;
+  padding-right: var(--space-lg);
+  border-right: var(--card-border);
+}
+.trust__viewport {
+  flex: 1 1 auto;
+  overflow: hidden;
+  min-width: 0;
+  /* Fade the band into the page at both ends so items enter and leave rather
+     than popping at a hard edge. */
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+.trust__track {
+  display: flex;
+  width: max-content;
+  animation: trust-scroll 42s linear infinite;
+}
+.trust:hover .trust__track {
+  animation-play-state: paused;
+}
+.trust__list {
+  display: flex;
+  list-style: none;
+  gap: var(--space-2xl);
+  padding-right: var(--space-2xl);
+}
+.trust__item {
+  font-family: var(--ff-display);
+  font-weight: 500;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--text-low);
+  transition: color var(--dur-base) var(--ease-power);
+}
+.trust__item:hover {
+  color: var(--text-hi);
+}
+
+/* -50% lands the second copy exactly where the first began, so the reset is
+   invisible. Any other value would visibly jump. */
+@keyframes trust-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (max-width: 640px) {
+  .trust {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+  .trust__label {
+    padding-right: 0;
+    border-right: none;
+  }
+  .trust__viewport {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trust__track {
+    animation: none;
+  }
+  .trust__viewport {
+    overflow-x: auto;
+  }
 }
 
 /* =========================================================================

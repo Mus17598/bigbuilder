@@ -6,6 +6,8 @@ import Preloader from '@/components/Preloader';
 import Nav from '@/components/Nav';
 import ScrollProgress from '@/components/ScrollProgress';
 import Footer from '@/components/Footer';
+import StructuredData from '@/components/StructuredData';
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from '@/lib/site';
 import GrainOverlay from '@/components/GrainOverlay';
 import CursorLight from '@/components/CursorLight';
 
@@ -36,20 +38,41 @@ const mono = JetBrains_Mono({
   display: 'swap',
 });
 
-const SITE = 'https://bigbuilder.example';
-
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE),
-  title: 'BigBuilder — We build the machine your business runs on',
-  description:
-    'BigBuilder designs, builds and runs the systems behind growing businesses: AI automation, CRM, websites, apps, chatbots and growth infrastructure.',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'BigBuilder — We build the machine your business runs on',
+    template: '%s · BigBuilder',
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    'AI automation',
+    'CRM development',
+    'WhatsApp Business API',
+    'chatbots and voice agents',
+    'website development',
+    'analytics dashboards',
+    'DevOps and integrations',
+  ],
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  alternates: { canonical: '/' },
   openGraph: {
     title: 'BigBuilder — We build the machine your business runs on',
     description:
       'AI automation, CRM, web, apps and growth systems, built and run end to end.',
-    url: SITE,
-    siteName: 'BigBuilder',
-    images: [{ url: '/assets/images/img-og-poster.jpg', width: 1200, height: 630 }],
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    images: [
+      {
+        url: '/assets/images/img-og-poster.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'BigBuilder, an AI-native build studio',
+      },
+    ],
+    locale: 'en_IN',
     type: 'website',
   },
   twitter: {
@@ -58,13 +81,13 @@ export const metadata: Metadata = {
     description: 'We build the machine your business runs on.',
     images: ['/assets/images/img-og-poster.jpg'],
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
+  },
 };
 
-/**
- * The ONE documented exception to "no hex outside tokens.css": the browser
- * chrome colour ships in a <meta> tag, which cannot read a CSS variable.
- * Keep this in sync with --ink-900.
- */
 export const viewport: Viewport = {
   themeColor: '#07070a',
   colorScheme: 'dark',
@@ -77,6 +100,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
       <body>
+        <StructuredData />
         <a className="skip-link" href="#main">
           Skip to content
         </a>

@@ -6,6 +6,7 @@
  * metadata are still rendered on the server.
  */
 import Hero from '@/components/Hero';
+import TrustStrip from '@/components/TrustStrip';
 import ServiceRack from '@/components/ServiceRack';
 import DeepDives from '@/components/DeepDives';
 import AnalyticsGallery from '@/components/AnalyticsGallery';
@@ -19,6 +20,7 @@ export default function Page() {
   return (
     <main id="main">
       <Hero />
+      <TrustStrip />
       <ServiceRack />
       <DeepDives />
       <AnalyticsGallery />
