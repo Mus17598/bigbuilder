@@ -5,6 +5,7 @@ import SmoothScroll from '@/components/SmoothScroll';
 import Preloader from '@/components/Preloader';
 import Nav from '@/components/Nav';
 import ScrollProgress from '@/components/ScrollProgress';
+import Footer from '@/components/Footer';
 import GrainOverlay from '@/components/GrainOverlay';
 import CursorLight from '@/components/CursorLight';
 
@@ -82,7 +83,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Preloader />
         <ScrollProgress />
         <Nav />
-        <SmoothScroll>{children}</SmoothScroll>
+        <SmoothScroll>
+          {children}
+          <Footer />
+        </SmoothScroll>
         <CursorLight />
         <GrainOverlay />
       </body>
