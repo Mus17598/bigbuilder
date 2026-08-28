@@ -31,14 +31,24 @@ npm run dev
 
 ## Assets
 
-Drop media into `public/assets/video/` and `public/assets/images/`.
-Missing files must never break layout — see the `MediaFrame` fallback (step 2).
+Drop media into `public/assets/video/` and `public/assets/images/`, then run:
+
+```bash
+npm run assets
+```
+
+That regenerates `lib/asset-manifest.json`, which `MediaFrame` consults before
+rendering anything. A file the manifest does not list is never requested, so a
+missing asset produces a labelled placeholder and **zero console errors**
+rather than a red 404. The manifest is regenerated automatically on `predev`
+and `prebuild`; re-run it by hand only if you add files while the dev server
+is already running.
 
 ## Build order
 
 1. [x] Scaffold, tokens, fonts, grain, Lenis/GSAP wiring
-2. [] `lib/services.ts` data model + `MediaFrame` fallback
-3. [] Nav, preloader, hero
+2. [x] `lib/services.ts` data model + `MediaFrame` fallback
+3. [ ] Nav, preloader, hero
 4. [ ] Pinned service rack
 5. [ ] Four scrub deep-dives
 6. [ ] Analytics gallery, process, proof, stack, pricing
