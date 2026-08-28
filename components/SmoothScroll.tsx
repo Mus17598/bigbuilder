@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import Lenis from 'lenis';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { prefersReducedMotion, wireScrollRefresh } from '@/lib/scroll';
+import { setLenis } from '@/lib/lenis';
 
 /**
  * Mounts Lenis and marries it to GSAP's clock.
@@ -33,6 +34,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
 
     // ScrollTrigger must recompute on every Lenis frame, not on the native
     // scroll event (which Lenis suppresses).
+    setLenis(lenis);
     lenis.on('scroll', ScrollTrigger.update);
 
     // gsap.ticker passes time in SECONDS; Lenis expects MILLISECONDS.
@@ -45,6 +47,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       unwireRefresh();
       gsap.ticker.remove(raf);
       lenis.destroy();
+      setLenis(null);
     };
   }, []);
 

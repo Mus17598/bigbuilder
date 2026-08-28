@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import '@/styles/globals.css';
 import SmoothScroll from '@/components/SmoothScroll';
+import Preloader from '@/components/Preloader';
+import Nav from '@/components/Nav';
+import ScrollProgress from '@/components/ScrollProgress';
 import GrainOverlay from '@/components/GrainOverlay';
 import CursorLight from '@/components/CursorLight';
 
@@ -76,6 +79,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a className="skip-link" href="#main">
           Skip to content
         </a>
+        <Preloader />
+        <ScrollProgress />
+        <Nav />
         <SmoothScroll>{children}</SmoothScroll>
         <CursorLight />
         <GrainOverlay />

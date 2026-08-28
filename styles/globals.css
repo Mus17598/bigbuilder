@@ -158,6 +158,383 @@
 }
 
 /* =========================================================================
+   SPLIT TEXT
+   The mask parent clips; the inner span is what moves. Padding plus a
+   matching negative margin stops overflow:hidden from shaving descenders off
+   display type set on tight leading.
+   ========================================================================= */
+.split-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+.split-char {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.split-char__inner {
+  display: inline-block;
+  will-change: transform;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* =========================================================================
+   BUTTONS
+   ========================================================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: 0.95rem 1.6rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--ff-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  transition: background-color var(--dur-base) var(--ease-power),
+    border-color var(--dur-base) var(--ease-power),
+    color var(--dur-base) var(--ease-power);
+}
+
+.btn--primary {
+  background: var(--brand);
+  /* Pure white on the violet fill clears AA at ~4.8:1; off-white does not. */
+  color: var(--text-on-brand);
+  box-shadow: 0 0 0 0 var(--brand-glow);
+}
+.btn--primary:hover {
+  background: var(--brand-soft);
+}
+
+.btn--ghost {
+  border: var(--card-border);
+  color: var(--text-hi);
+}
+.btn--ghost:hover {
+  border-color: var(--brand);
+  color: var(--text-hi);
+}
+
+.btn--sm {
+  padding: 0.6rem 1.1rem;
+  font-size: 0.85rem;
+  border: var(--card-border);
+  color: var(--text-hi);
+}
+.btn--sm:hover {
+  border-color: var(--brand);
+}
+
+/* =========================================================================
+   SCROLL PROGRESS
+   ========================================================================= */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: var(--z-progress);
+  pointer-events: none;
+}
+.scroll-progress__fill {
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: var(--accent);
+  /* The colour transition, not the width, is what makes an accent handover
+     between sections read as continuous. */
+  transition: background-color 0.5s var(--ease-power);
+}
+
+/* =========================================================================
+   NAV
+   ========================================================================= */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-nav);
+  transition: background-color var(--dur-base) var(--ease-power),
+    border-color var(--dur-base) var(--ease-power);
+  border-bottom: 1px solid transparent;
+}
+.nav.is-solid {
+  background: var(--scrim-nav);
+  /* No hand-written -webkit- prefix. Next 16 compiles CSS with Lightning CSS,
+     which prefixes automatically; an author-written prefixed declaration
+     placed after the standard one wins and the standard one is dropped from
+     the output entirely. */
+  backdrop-filter: blur(14px);
+  border-bottom-color: var(--line);
+}
+
+.nav__inner {
+  max-width: var(--max-w);
+  margin-inline: auto;
+  padding: var(--space-md) var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+
+.nav__wordmark {
+  font-family: var(--ff-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+  color: var(--text-hi);
+}
+
+.nav__links {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.nav__link {
+  position: relative;
+  font-size: 0.9rem;
+  color: var(--text-mid);
+  padding-bottom: 2px;
+  transition: color var(--dur-fast) var(--ease-power);
+}
+.nav__link:hover {
+  color: var(--text-hi);
+}
+/* Underline wipes in from the left rather than fading, so the direction of
+   the gesture matches the reading direction. */
+.nav__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 100%;
+  background: var(--brand);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform var(--dur-base) var(--ease-expo);
+}
+.nav__link:hover::after {
+  transform: scaleX(1);
+}
+
+@media (max-width: 900px) {
+  .nav__links {
+    display: none;
+  }
+}
+
+/* =========================================================================
+   PRELOADER
+   ========================================================================= */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-preloader);
+  background: var(--ink-900);
+  display: grid;
+  place-items: center;
+}
+
+.preloader__inner {
+  text-align: center;
+}
+
+.preloader__wordmark {
+  display: flex;
+  justify-content: center;
+  font-family: var(--ff-display);
+  font-weight: 700;
+  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  letter-spacing: var(--tracking-display);
+  color: var(--text-hi);
+  transform-origin: 50% 50%;
+}
+
+/* Each glyph rises out of its own clipping mask. */
+.preloader__glyph {
+  display: inline-block;
+  overflow: hidden;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.preloader__glyph i {
+  display: inline-block;
+  font-style: normal;
+  transform: translateY(110%);
+}
+
+.preloader__status {
+  margin-top: var(--space-md);
+  color: var(--text-low);
+}
+
+.preloader__track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--line);
+}
+.preloader__bar {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--brand);
+  opacity: 0.75;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+/* =========================================================================
+   HERO
+   ========================================================================= */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-media);
+  will-change: transform, filter;
+}
+
+/* MediaFrame normally reserves a ratio box; in the hero the section owns the
+   size, so the frame fills it instead. */
+.media-frame--fill,
+.hero__media .media-frame {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  border-radius: 0;
+}
+.hero__media .media-frame__fallback {
+  border-radius: 0;
+  border: none;
+  /* Full-bleed, so the caption must not sit centred behind the headline. */
+  place-items: end center;
+  padding-bottom: var(--space-2xl);
+}
+.hero__media .media-frame__caption {
+  opacity: 0.5;
+}
+
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: calc(var(--z-media) + 1);
+  pointer-events: none;
+  /* Never text over bare video. Strong top and bottom, lighter through the
+     middle so the footage still reads. */
+  background: linear-gradient(
+    to bottom,
+    var(--scrim-strong) 0%,
+    var(--scrim-mid) 45%,
+    var(--scrim-strong) 100%
+  );
+}
+.hero__scrim--scroll {
+  background: var(--ink-900);
+  opacity: 0;
+}
+
+.hero__content {
+  position: relative;
+  z-index: var(--z-content);
+  width: 100%;
+  /* The section is already flex-centred, so this padding only has to clear
+     the fixed nav and keep the scroll indicator inside the first screen.
+     Larger values pushed the hero past 100svh and broke "full viewport". */
+  padding-block: var(--space-2xl) var(--space-xl);
+  will-change: transform, opacity;
+}
+
+.hero__kicker {
+  color: var(--brand-soft);
+  margin-bottom: var(--space-lg);
+}
+
+.hero__title {
+  font-size: var(--fs-hero);
+  /* No max-width: the explicit <br> owns the line break at desktop, and
+     natural wrapping takes over once the viewport is too narrow for it. */
+  /* Caps come from CSS, not from the markup. The DOM keeps sentence case so
+     a screen reader announces words rather than spelling out letters. */
+  text-transform: uppercase;
+}
+
+.hero__lede {
+  margin-top: var(--space-lg);
+  font-size: var(--fs-lede);
+  color: var(--text-mid);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+/* A 1px rail with a dot travelling down it. Cheaper and quieter than a
+   bouncing chevron, and it repeats forever without demanding attention. */
+.hero__indicator {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-lg);
+  z-index: var(--z-content);
+  width: 1px;
+  height: 64px;
+  background: var(--line);
+  overflow: hidden;
+}
+.hero__indicator-dot {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: 3px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--brand);
+  animation: hero-dot 2s var(--ease-inout) infinite;
+}
+@keyframes hero-dot {
+  0% { transform: translateY(-100%); opacity: 0; }
+  35% { opacity: 1; }
+  100% { transform: translateY(64px); opacity: 0; }
+}
+
+@media (max-width: 640px) {
+  .hero__indicator { display: none; }
+  .hero__actions .btn { flex: 1 1 100%; }
+}
+
+/* =========================================================================
    MEDIA FRAME — the missing-asset contract.
    The WRAPPER owns aspect-ratio, not the media element, so a placeholder and
    a real asset occupy identical space and a 404 causes zero layout shift.

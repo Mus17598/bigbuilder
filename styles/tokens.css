@@ -82,7 +82,10 @@
   --ff-body: var(--font-body), 'Inter', ui-sans-serif, system-ui, sans-serif;
   --ff-mono: var(--font-mono), 'JetBrains Mono', ui-monospace, monospace;
 
-  --fs-hero: clamp(3.5rem, 9vw, 11rem);
+  /* Tuned so the longest headline line ("your business runs on.", 22 chars)
+     stays on ONE line from 1280 up to the 1680 shell cap. 9vw overflows it and
+     strands the last word on a line of its own. */
+  --fs-hero: clamp(2.75rem, 6.4vw, 8.5rem);
   --fs-section: clamp(2.5rem, 6vw, 6.5rem);
   --fs-module: clamp(2rem, 3.6vw, 3.75rem);
   --fs-lede: clamp(1.05rem, 1.4vw, 1.35rem);
