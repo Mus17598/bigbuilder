@@ -49,7 +49,7 @@ is already running.
 1. [x] Scaffold, tokens, fonts, grain, Lenis/GSAP wiring
 2. [x] `lib/services.ts` data model + `MediaFrame` fallback
 3. [x] Nav, preloader, hero
-4. [ ] Pinned service rack
+4. [x] Pinned service rack
 5. [ ] Four scrub deep-dives
 6. [ ] Analytics gallery, process, proof, stack, pricing
 7. [ ] CTA, form, footer

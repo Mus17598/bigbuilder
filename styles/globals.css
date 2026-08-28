@@ -479,6 +479,12 @@
   margin-bottom: var(--space-lg);
 }
 
+/* The hero belongs to the brand, not to any module, so it reads --brand
+   directly rather than the --accent runtime slot the sections write to. */
+.hero__title .accent-word {
+  color: var(--brand);
+}
+
 .hero__title {
   font-size: var(--fs-hero);
   /* No max-width: the explicit <br> owns the line break at desktop, and
@@ -532,6 +538,368 @@
 @media (max-width: 640px) {
   .hero__indicator { display: none; }
   .hero__actions .btn { flex: 1 1 100%; }
+}
+
+/* =========================================================================
+   SERVICE RACK
+   ========================================================================= */
+.rack {
+  position: relative;
+  background: var(--ink-800);
+  border-block: var(--card-border);
+  overflow: hidden;
+}
+
+/* The active card's accent bleeding into the section. Kept at 8% and very
+   soft: this is atmosphere, not a fill. It reads the same --accent slot the
+   progress bar does, so both change together. */
+.rack__bleed {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  opacity: 0.08;
+  background: radial-gradient(circle at 68% 45%, var(--accent), transparent 62%);
+  transition: background 0.6s var(--ease-power);
+}
+
+.rack__inner {
+  position: relative;
+  z-index: var(--z-content);
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: 35% 65%;
+  align-items: center;
+  gap: var(--space-xl);
+  padding-block: var(--space-2xl);
+}
+
+/* Grid items default to min-width:auto and refuse to shrink below their
+   content's min-content width, which inflates the whole column. The mobile
+   pillar row lays all four pillars end to end (~800px of min-content), so
+   without this the 1fr column grew past the viewport and the cards overflowed
+   behind body{overflow-x:hidden}. min-width:0 lets the column collapse and
+   hands the overflow to the pillar row's own horizontal scroller. */
+.rack__aside,
+.rack__viewport {
+  min-width: 0;
+}
+
+.rack__aside {
+  padding-right: var(--space-xl);
+}
+
+.rack__title {
+  font-size: var(--fs-section);
+  text-transform: uppercase;
+  margin-top: var(--space-md);
+}
+
+.pillars {
+  list-style: none;
+  margin-top: var(--space-xl);
+  display: grid;
+  gap: var(--space-md);
+  counter-reset: none;
+}
+
+.pillars__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 var(--space-md);
+  padding-left: var(--space-md);
+  border-left: 1px solid var(--line);
+  color: var(--text-low);
+  transition: color var(--dur-base) var(--ease-power),
+    border-color var(--dur-base) var(--ease-power),
+    opacity var(--dur-base) var(--ease-power);
+  opacity: 0.55;
+}
+.pillars__item.is-active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  opacity: 1;
+}
+
+.pillars__num {
+  color: inherit;
+}
+.pillars__name {
+  font-family: var(--ff-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: inherit;
+}
+.pillars__premise {
+  grid-column: 2;
+  font-size: 0.85rem;
+  color: var(--text-mid);
+}
+
+.rack__hint {
+  margin-top: var(--space-xl);
+}
+
+/* The window the track slides through. overflow is visible so cards are not
+   clipped mid-scale; the section itself does the clipping. */
+.rack__viewport {
+  position: relative;
+  overflow: hidden;
+  padding-block: var(--space-lg);
+  margin-inline: calc(var(--space-lg) * -1);
+  padding-inline: var(--space-lg);
+}
+
+.rack__track {
+  display: flex;
+  gap: var(--space-md);
+  width: max-content;
+  will-change: transform;
+}
+
+/* ---- Card ---- */
+.svc-card {
+  flex: 0 0 clamp(260px, 24vw, 380px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  text-align: left;
+  padding: var(--space-lg);
+  min-height: 26rem;
+  background: var(--surface-1);
+  border: var(--card-border);
+  box-shadow: var(--card-inset);
+  border-radius: var(--radius-md);
+  transform-origin: 50% 50%;
+  transition: border-color var(--dur-base) var(--ease-power),
+    background-color var(--dur-base) var(--ease-power);
+}
+.svc-card:hover,
+.svc-card:focus-visible {
+  border-color: var(--card-accent);
+  background: var(--surface-2);
+}
+
+.svc-card__head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.svc-card__num {
+  font-size: 0.95rem;
+  color: var(--card-accent);
+}
+
+.svc-card__rule {
+  width: 2.5rem;
+  height: 1px;
+  background: var(--card-accent);
+  opacity: 0.6;
+}
+
+.svc-card__name {
+  font-size: 1.5rem;
+  letter-spacing: var(--tracking-display);
+}
+.svc-card__promise {
+  color: var(--text-hi);
+  font-size: 0.98rem;
+}
+
+.svc-card__list {
+  list-style: none;
+  display: grid;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+.svc-card__list li {
+  position: relative;
+  padding-left: var(--space-md);
+  font-size: 0.88rem;
+  color: var(--text-mid);
+}
+.svc-card__list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 6px;
+  height: 1px;
+  background: var(--card-accent);
+}
+
+.svc-card__cta {
+  margin-top: auto;
+  padding-top: var(--space-md);
+  color: var(--text-low);
+  transition: color var(--dur-base) var(--ease-power);
+}
+.svc-card:hover .svc-card__cta,
+.svc-card:focus-visible .svc-card__cta {
+  color: var(--card-accent);
+}
+
+/* ---- Mobile: unpinned stack, pillar list becomes a sticky divider ---- */
+@media (max-width: 1023px) {
+  .rack__inner {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    padding-block: var(--space-2xl);
+  }
+  .rack__aside {
+    padding-right: 0;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--ink-800);
+    padding-block: var(--space-md);
+  }
+  .pillars {
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    overflow-x: auto;
+    gap: var(--space-lg);
+    margin-top: var(--space-lg);
+    padding-bottom: var(--space-xs);
+    scrollbar-width: none;
+  }
+  .pillars__premise {
+    display: none;
+  }
+  .rack__hint {
+    display: none;
+  }
+  .rack__viewport {
+    overflow: visible;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+  .rack__track {
+    flex-direction: column;
+    width: 100%;
+  }
+  .svc-card {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+  }
+}
+
+/* Reduced motion: no pin and no horizontal travel at any width, so the track
+   must lay itself out statically. Below 1024 it stacks; above, it wraps into
+   a grid rather than becoming a 12-card column. */
+@media (prefers-reduced-motion: reduce) {
+  .rack__inner {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  .rack__aside {
+    padding-right: 0;
+  }
+  .rack__viewport {
+    overflow: visible;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+  .rack__track {
+    flex-wrap: wrap;
+    width: 100%;
+    transform: none !important;
+  }
+  .svc-card {
+    flex: 1 1 300px;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .rack__hint {
+    display: none;
+  }
+}
+
+/* =========================================================================
+   SERVICE DETAIL DIALOG
+   ========================================================================= */
+.detail {
+  width: min(1040px, 92vw);
+  max-height: 88vh;
+  padding: 0;
+  border: var(--card-border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
+  color: var(--text-mid);
+  overflow: auto;
+}
+.detail::backdrop {
+  background: var(--scrim-strong);
+  backdrop-filter: blur(8px);
+}
+
+.detail__inner {
+  position: relative;
+  padding: var(--space-xl);
+}
+
+.detail__close {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  padding: var(--space-xs) var(--space-sm);
+  border: var(--card-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-mid);
+  transition: border-color var(--dur-fast) var(--ease-power),
+    color var(--dur-fast) var(--ease-power);
+}
+.detail__close:hover {
+  border-color: var(--card-accent);
+  color: var(--text-hi);
+}
+
+.detail__body {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+.detail__eyebrow {
+  color: var(--card-accent);
+}
+.detail__title {
+  font-size: clamp(2rem, 3.4vw, 3.25rem);
+  margin-top: var(--space-sm);
+}
+.detail__promise {
+  color: var(--text-hi);
+  font-size: var(--fs-lede);
+  margin-top: var(--space-md);
+}
+
+.detail__list {
+  list-style: none;
+  display: grid;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: var(--card-border);
+}
+.detail__list li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-sm);
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .detail__body {
+    grid-template-columns: 1fr;
+  }
+  .detail__inner {
+    padding: var(--space-lg);
+  }
 }
 
 /* =========================================================================
